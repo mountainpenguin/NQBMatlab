@@ -104,6 +104,8 @@ function [handles]=createGUI(DirName,TH)
     state.lrgb=image.L;
     tmp=edge(double(state.lrgb),'canny');
     CImage(find(tmp~=0))=255;
+    % remove alpha channel
+    CImage = CImage(:, :, 1:3);
     imageH=imshow(CImage,[]);
     set(imageH,'Tag','Image0');
      

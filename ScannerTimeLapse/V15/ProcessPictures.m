@@ -62,7 +62,10 @@ clnImg_Dir = fullfile(DirName,'tmpCleanImg');
 %% looking at the relevant area in the plate
 % creating an indices matrix, and a distance from the centre matrix
     FullFileName = fullfile(picDir, char(FileVec(1)));
-    I = rgb2gray(double(imread(FullFileName))/255);
+    % remove alpha channel
+    im = imread(FullFileName);
+    im = im(:, :, 1:3);
+    I = rgb2gray(double(im)/255);
     [rows, cols]  = size(I);
 if lastPicFlag
     relevantArea=ones(rows,cols);
@@ -87,6 +90,8 @@ progress_bar = waitbar(0);
 
 %% cleaning all frames
 bg = imread(FullFileName); %%% 19.1.
+% remove alpha channel
+bg = bg(:, :, 1:3);
 if lastPicFlag
     FileVec=FileVec(end);
 end
@@ -95,6 +100,8 @@ NumOfFiles = size(FileVec,1);
 % Calculate stretch limits of lat pic
 lastFileName = fullfile(picDir, char(FileVec(end)));
 lastImg = imread(lastFileName);
+% remove alpha channel
+lastImg = lastImg(:, :, 1:3);
 cleanLast=cleanImgNew(lastImg,bg);
 cleanLast=im2double(cleanLast);
 cleanLast=cleanLast.*relevantArea;
@@ -106,6 +113,8 @@ for k=1:NumOfFiles
     
     FullFileName = fullfile(picDir, char(FileVec(k)));
     I = imread(FullFileName);
+    % remove alpha channel
+    I = I(:, :, 1:3);
 
     %% cleaning the noises
     clnImg = cleanImgNew(I,bg);
