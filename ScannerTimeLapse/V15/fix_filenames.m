@@ -1,5 +1,5 @@
-function fix_filenames(DirName, timestep)
-%% fix_filenames(DirName, timestep)
+function fix_filenames(DirName)
+%% fix_filenames(DirName)
 % -----------------------------------------------------------------------
 % Purpose: Fix default filenames from scanner on CMBI2
 %
@@ -9,8 +9,6 @@ function fix_filenames(DirName, timestep)
 %
 % Arguments: DirName (optional) - Name of directory, defaults to the 
 %                                 current working directory.
-%            timestep (optional) - Time between images, defaults to 15 
-%                                  minutes.
 %
 % Input files: 'Name_0_YYYYMMDD_HHMM.tif' - the pictures
 % Output files: 'P1_00000.tif' - fixed pictures
@@ -21,34 +19,39 @@ if nargin == 0
     DirName = pwd;
 end
 
-if nargin < 2
-    %% if no timestep given, use 15
-    timestep = 15;
-end
 
+disp('Creating backup of /Pictures --> /Pictures.backup');
 %% create backup directory for images
-[success_mk, msg_mk, msgid_mk] = mkdir(DirName, 'Pictures.backup');
-if ~success_mk
-    error(msgid_mk, msg_mk);
+indir = fullfile(DirName, 'Pictures');
+outdir = fullfile(DirName, 'Pictures.backup');
+[status_cp, msg_cp] = copyfile(indir, outdir);
+if ~status_cp
+    error(msg_cp);
 end
 
-disp('-----------------------------------------------------------------');
-disp([datestr(now), ' ', DirName]);
-disp('-----------------------------------------------------------------');
 disp('Renaming files...');
 
 %% list files
 files = dir(fullfile(DirName, 'Pictures', '*.tif'));
-t0 = datevec(files(1).date, 'dd-mmm-yyyy HH:MM:SS');
+t0 = get_time(files(1).name);
 for file = files'
-    t1 = datevec(file.date, 'dd-mmm-yyyy HH:MM:SS');
+    t1 = get_time(file.name);
     tdiff = etime(t1, t0) / 60;
     tdiff = round(tdiff);
     outname = sprintf('P1_%05d.tif', tdiff);
-    %disp([' ', file.name, ' --> ', outname]);
+    disp([' ', file.name, ' --> ', outname]);
     inpath = fullfile(DirName, 'Pictures', file.name);
     outpath = fullfile(DirName, 'Pictures', outname);
     movefile(inpath, outpath);
 end
 disp('Done');
+end
+
+function t = get_time(name)
+f0 = strsplit(name, '_');
+f0 = strjoin(f0(3:4), '');
+f0 = strsplit(f0, '.');
+f0 = char(f0(1));
+dstr = sprintf('%s-%s-%s %s:%s', f0(1:4), f0(5:6), f0(7:8), f0(9:10), f0(11:12));
+t = datevec(dstr, 'yyyy-mm-dd HH:MM');
 end
