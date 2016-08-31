@@ -66,19 +66,19 @@ function [handles]=createGUI(DirName,TH)
     % toolbar
     set(handles.fig,'toolbar','figure');
     ht = uitoolbar(handles.fig);
-    [icon map]=imread(strcat(cdir,'\Icons\MaskCircle.png'));
+    [icon map]=imread(fullfile(cdir, 'Icons', 'MaskCircle.png'));
     maskCircleButton = uipushtool('Parent',ht,'CData',icon,...
                                     'Tag','CircMask');
                       
-    [icon map]=imread(strcat(cdir,'\Icons\MaskArea.png'));
+    [icon map]=imread(fullfile(cdir, 'Icons', 'MaskArea.png'));
     maskAreaButton = uipushtool('Parent',ht,'CData',icon,...
                                   'Tag','AreaButton','Separator','on');
     
-    [icon map]=imread(strcat(cdir,'\Icons\IncludeArea.png'));
+    [icon map]=imread(fullfile(cdir, 'Icons', 'IncludeArea.png'));
     InAreaButton = uipushtool('Parent',ht,'CData',icon,...
                                   'Tag','ControlMaskInclude','Enable','off');
     
-    [icon map]=imread(strcat(cdir,'\Icons\ExcludeArea.png'));
+    [icon map]=imread(fullfile(cdir, 'Icons', 'ExcludeArea.png'));
     ExAreaButton = uipushtool('Parent',ht,'CData',icon,...
                                   'Enable','off','Tag','ControlMaskExclude');
                               
