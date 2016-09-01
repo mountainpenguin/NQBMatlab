@@ -5,7 +5,8 @@ function fix_filenames(DirName)
 %
 % Description: Renames files from the form 'Name_0_YYYYMMDD_HHMM.tif' to 
 %           'P1_00000.tif' where 00000 is the number of minutes since the
-%           first image was captured.
+%           first image was captured. Also removes the alpha channel from 
+%           all images
 %
 % Arguments: DirName (optional) - Name of directory, defaults to the 
 %                                 current working directory.
@@ -40,9 +41,14 @@ for file = files'
     tdiff = round(tdiff);
     outname = sprintf('P1_%05d.tif', tdiff);
     disp([' ', file.name, ' --> ', outname]);
+
+    im = imread(fullfile(DirName, 'Pictures', file.name));
+    im = im(:, :, 1:3);
     inpath = fullfile(DirName, 'Pictures', file.name);
     outpath = fullfile(DirName, 'Pictures', outname);
-    movefile(inpath, outpath);
+    %movefile(inpath, outpath);
+    delete(inpath)
+    imwrite(im, outpath)
 end
 disp('Done');
 end
