@@ -70,7 +70,7 @@ h.edc = uicontrol('style','text','unit','pix','position',[10 620 100 20],...
 h.ed = uicontrol('style','edit','unit','pix','position',[110 620 60 20],...
                  'fontsize',10);           
              
-[icon map]=imread(strcat(cdir,'\Icons\Search.png'));
+[icon map]=imread(fullfile(cdir, 'Icons', 'Search.png'));
 
 h.search= uicontrol('style','pushbutton',...
                  'unit','pix',...
@@ -110,18 +110,18 @@ function buildToolBar(handles,FileDir,times,dir)
     % Add icons to the toolbar
     
     ht = uitoolbar(handles.fig);
-    [icon map]=imread(strcat(dir,'\Icons\NumbersIn.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'NumbersIn.png'));
     numbersh = uipushtool('Parent',ht,'CData',icon,'Tag','NumbersIn');
     
-    [icon map]=imread(strcat(dir,'\Icons\Analysis.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'Analysis.png'));
     analysish = uipushtool('Parent',ht,'CData',icon,'Tag','PreviewMenuA',...
                      'TooltipString','Show analysis mode','Separator','on');
                  
-    [icon map]=imread(strcat(dir,'\Icons\Picture.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'Picture.png'));
     pictureh = uipushtool('Parent',ht,'CData',icon,'Tag','PreviewMenuP',...
                      'TooltipString','Show picture mode');
                  
-    [icon map]=imread(strcat(dir,'\Icons\BW.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'BW.png'));
     colorh = uipushtool('Parent',ht,'CData',icon,'Tag','ColorMenu');
                  
     set(analysish,'ClickedCallback',...
@@ -136,11 +136,11 @@ function buildToolBar(handles,FileDir,times,dir)
                    @(h,e)colorClickedCallback(h,e,handles,FileDir,...
                    times,dir));
                       
-    [icon map]=imread(strcat(dir,'\Icons\Include.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'Include.png'));
     includeh = uipushtool('Parent',ht,'CData',icon,'Tag','IncludeMenu',...
                           'Separator','on');
    
-    [icon map]=imread(strcat(dir,'\Icons\Exclude.png'));
+    [icon map]=imread(fullfile(dir, 'Icons', 'Exclude.png'));
     excludeh = uipushtool('Parent',ht,'CData',icon,'Tag','ExcludeMenu');
     
     set(numbersh,'ClickedCallback',...
@@ -697,9 +697,9 @@ function colorClickedCallback(h,e,handles,FileDir,times,iconsdir)
     
     % switch between icons
     if (state.bw)
-       [icon map]=imread(strcat(iconsdir,'\Icons\Color.png'));
+       [icon map]=imread(fullfile(iconsdir, 'Icons', 'Color.png'));
     else
-       [icon map]=imread(strcat(iconsdir,'\Icons\BW.png'));
+       [icon map]=imread(fullfile(iconsdir, 'Icons', 'BW.png'));
     end
     set(h,'CDATA',icon);
     
