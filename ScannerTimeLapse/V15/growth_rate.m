@@ -11,6 +11,10 @@ function growth_rate(varargin)
 %               If a single string, only processes that path
 %               If a cell array (curly brackets), processes each directory and
 %               combines them into a single data set
+%            method (optional)
+%               Defaults to 1: time for sixfold increase from first appearance
+%               If set to 2: averaged time for sixfold increase from all
+%               timepoints
 %            debug (optional)
 %               Defaults to 0
 %               If set to 1, will create a figure to demonstrate how growth
@@ -108,24 +112,22 @@ for DirName = DirNames
             time = timeaxis(fidx-1:end)';
             time_lim = time(7:end);
             % calculate time for area to increase by 6-fold
-            lindex = find(area > area(2) * 6, 1, 'first');
-            if length(lindex) == 0
-                tdiff = -1;
+            if options.method == 1
+                lindex = find(area > area(2) * 6, 1, 'first');
+                if length(lindex) > 0
+                    t0 = time(2);
+                    t1 = time(lindex);
+                    tdiff = t1 - t0;
+                    Levin_Rate = [Levin_Rate, tdiff];
+                    Levin_AppTimes = [Levin_AppTimes, time(2)];
+                end
             else
-                t0 = time(2);
-                t1 = time(lindex);
-                tdiff = t1 - t0;
-                Levin_Rate = [Levin_Rate, tdiff];
+                Levin_Rate = [Levin_Rate, get_growth_times(time, area)];
                 Levin_AppTimes = [Levin_AppTimes, time(2)];
             end
             if length(area) < 10 
             else
                 % fit linear regression
-        %        X = [ones(length(time), 1) time'];
-        %        B = X\area;
-        %        intercept = B(1);
-        %        gradient = B(2);  % area growth per minute
-
                 f2 = fitlm(time_lim, area_lim, 'RobustOpts', 'on');
                 B = table2array(f2.Coefficients(:, 1));
                 intercept_r = B(1);
@@ -254,8 +256,25 @@ msg = sprintf('Saved to %s', fullfile(pwd, 'out2.pdf'));
 disp(msg);
 
 print('-dpdf', '-r0', 'out2');
-
+end
 
 %nhist(GrowthRates, 'xlabel', 'Growth Rate');
 
-
+function growth_time = get_growth_times(time, area)
+    fold_factor = 6;
+    aindexes = [];
+    lindexes = [];
+    growth_times = [];
+    for idx = 2:length(area)
+        lindex = find(area > area(idx) * 6, 1, 'first');
+        if length(lindex) > 0
+            lindexes = [lindexes lindex];
+            aindexes = [aindexes idx];
+            t0 = time(idx);
+            t1 = time(lindex);
+            tdiff = t1 - t0;
+            growth_times = [growth_times tdiff];
+        end
+    end
+    growth_time = mean(growth_times);
+end
