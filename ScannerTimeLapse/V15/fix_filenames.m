@@ -55,7 +55,7 @@ end
 
 function t = get_time(name)
 f0 = strsplit(name, '_');
-f0 = strjoin(f0(3:4), '');
+f0 = strjoin(f0(end-1:end), '');
 f0 = strsplit(f0, '.');
 f0 = char(f0(1));
 dstr = sprintf('%s-%s-%s %s:%s', f0(1:4), f0(5:6), f0(7:8), f0(9:10), f0(11:12));
