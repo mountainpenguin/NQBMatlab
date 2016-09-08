@@ -262,14 +262,10 @@ end
 
 function growth_time = get_growth_times(time, area)
     fold_factor = 6;
-    aindexes = [];
-    lindexes = [];
     growth_times = [];
     for idx = 2:length(area)
         lindex = find(area > area(idx) * 6, 1, 'first');
         if length(lindex) > 0
-            lindexes = [lindexes lindex];
-            aindexes = [aindexes idx];
             t0 = time(idx);
             t1 = time(lindex);
             tdiff = t1 - t0;
