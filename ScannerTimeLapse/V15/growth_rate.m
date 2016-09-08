@@ -1,5 +1,5 @@
-function growth_rate(DirNames, debug)
-%% growth_rate(DirNames, debug)
+function growth_rate(varargin)
+%% growth_rate(DirNames, ['method', method], ['debug', debug])
 % -----------------------------------------------------------------------
 % Purpose: Plot various histograms including colony growth rates
 %
@@ -24,10 +24,10 @@ function growth_rate(DirNames, debug)
 %       growth_rate({'/full/path/to/data1', '/full/path/to/data2'});
 %
 %   Single dataset, with debugging:
-%       growth_rate('/full/path/to/data', 1);
+%       growth_rate('/full/path/to/data', 'debug', 1);
 %
 %   Multiple datasets, with debugging:
-%       growth_rate({'/full/path/to/data1', '/full/path/to/data2'}, 1);
+%       growth_rate({'/full/path/to/data1', '/full/path/to/data2'}, 'debug', 1);
 %
 % Notes:
 %   Ignores any colonies that are not present in the last frame.
@@ -50,16 +50,28 @@ function growth_rate(DirNames, debug)
 % 'growth time'.
 % -----------------------------------------------------------------------
 
-if nargin == 0
-    DirName = pwd;
-    debug = 0;
+% parse arguments
+options = struct('debug', 0, 'method', 1);
+optionNames = fieldnames(options);
+
+% if odd number of arguments: DirNames is specified
+if round(nargin / 2) ~= nargin / 2
+    DirNames = varargin(1);
+    varargin = varargin(2:end);
+else
+    DirNames = pwd;
 end
 
-if nargin == 1
-    debug = 0;
+for pair = reshape(varargin, 2, [])
+    inpName = lower(pair{1});
+    if any(strcmp(inpName, optionNames))
+        options.(inpName) = pair{2};
+    else
+        error('%s is not a recognized parameter name', inpName);
+    end
 end
 
-if debug > 0
+if options.debug > 1
     disp('Debug has been set; you can type "close all" to close all figures');
 end
 
@@ -121,16 +133,13 @@ for DirName = DirNames
                 GrowthRates = [GrowthRates, gradient_r * 60];
                 AppTimes = [AppTimes, time(2)];
 
-                if debug > 0
+                if options.debug > 0
                     figure;
                     hold on
                     dpoints = scatter(time, area, 70, ...
                         'MarkerFaceColor', [44 162 95] / 256, ...
                         'MarkerEdgeColor', [100 100 100] / 256, ...
                         'LineWidth', 1);
-            %        fitline = plot(time, (gradient * time) + intercept, ...
-            %            'LineWidth', 3, ...
-            %            'Color', 'black');
                     fitline_r = plot(time_lim, (gradient_r * time_lim) + intercept_r, ...
                         'LineWidth', 3', ...
                         'Color', 'black');
@@ -146,7 +155,7 @@ for DirName = DirNames
             end
         end
     end
-    if debug > 0
+    if options.debug > 0
         input('Press "enter" when you are happy with the debugging output; this will close all figures');
     end
     close all;
