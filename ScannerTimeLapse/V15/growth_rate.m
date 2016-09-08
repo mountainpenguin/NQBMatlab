@@ -64,7 +64,7 @@ if debug > 0
 end
 
 if ischar(DirNames)
-    DirNames = {DirNames}
+    DirNames = {DirNames};
 end
 
 GrowthRates = [];
