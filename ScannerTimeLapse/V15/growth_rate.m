@@ -112,6 +112,104 @@ for k = 1:length(DirNames)
             area_lim = area(7:end);
             time = timeaxis(fidx-1:end)';
             time_lim = time(7:end);
+            if length(area) >= 10 
+%                % fit linear regression
+%                f2 = fitlm(time_lim, area_lim, 'RobustOpts', 'on');
+%                B = table2array(f2.Coefficients(:, 1));
+%                intercept_r = B(1);
+%                gradient_r = B(2);
+%                GrowthRates = [GrowthRates, gradient_r * 60];  % px^2 per hour
+%                AppTimes = [AppTimes, time(2)];
+                
+                % fit polynomial
+                %model = @(B, t)B(1) + B(2).*t + B(3).*t.^2;
+                %B0 = [1 1 1];  % initial estimate
+
+                % fit logistic function
+                model = @(B,t) B(1) + B(2) ./ (1 + exp(-B(3) .* (t-B(4))));
+                B0 = [0 1000 0.001 300];
+                coeffnames = {'yoffset', 'maxY', 'gamma', 'alpha'};
+                f3 = fitnlm(time, area, model, B0, 'CoefficientNames', coeffnames);
+
+%                model = @(B, t) B(1) + B(2) ./ (B(5) + B(4) .* exp(-B(3) .* (t - B(6))));
+%                B0 = [0 1000 0.001 1 1 300];
+%                f3 = fitnlm(time, area, model, B0);
+
+                coeff = table2array(f3.Coefficients(:, 1));
+                rmse = f3.RMSE;
+                colony_discard = 0;
+                if (rmse < 30) && (coeff(3) > 0) && (coeff(3) < 0.02)
+                    %% midpoint of linear portion of logistic curve
+                    midX = coeff(4);
+                    mididx = find(abs(time - midX) == min(abs(time - midX)), 1, 'first');
+                    if (mididx > 3)
+    %                    % use data region
+    %                    if time(mididx) < midX
+    %                        linear_time = time(mididx - 2:mididx + 3);
+    %                        linear_area = area(mididx - 2:mididx + 3);
+    %                    else
+    %                        linear_time = time(mididx - 3:mididx + 2);
+    %                        linear_area = area(mididx - 3:mididx + 2);
+    %                    end
+
+                        % use modelled region
+                        linear_time = time(mididx - 3:mididx);
+                        linear_area = model(coeff, time);
+                        linear_area = linear_area(mididx - 3:mididx);
+                        % fit linear regression to linear modelled region
+                        f4 = fitlm(linear_time, linear_area, 'RobustOpts', 'on');
+                        lin_coeff = table2array(f4.Coefficients(:, 1));
+                        GrowthRates = [GrowthRates, lin_coeff(2) * 60]; 
+
+                        %GrowthRates = [GrowthRates, coeff(3) * 60];  % hr^{-1}
+                        AppTimes = [AppTimes, time(2)];
+                        colony_discard = 1;
+                    end
+                end
+
+
+                if (options.debug > 0) && (colony_discard == 1)% & length(GrowthRates) == 8
+                    %f3
+%                    grad = gradient(gradient(model(B, time)));
+%                    lims = 0.3;
+%                    linear_x1 = find(abs(grad) < lims, 1, 'first');
+%                    linear_x2 = linear_x1 + find(abs(grad(linear_x1:end)) > lims, 1, 'first') - 1;
+%                    linear_portion = model(B, time);
+%                    linear_portion = linear_portion(linear_x1:linear_x2);
+%                    linear_time = time(linear_x1:linear_x2);
+%                    %linear = plot(linear_time, linear_portion, 'LineWidth', 5);
+                    figure;
+                    hold on
+                    dpoints = scatter(time, area, 70, ...
+                        'MarkerFaceColor', [44 162 95] / 256, ...
+                        'MarkerEdgeColor', [100 100 100] / 256, ...
+                        'LineWidth', 1);
+%                    fitline_r = plot(time, (gradient_r * time) + intercept_r, ...
+%                        'LineWidth', 3, ...
+%                        'Color', 'black');
+                    fitline_r2 = plot(time, model(coeff, time), ...
+                        'LineWidth', 3, ...
+                        'Color', 'red');
+
+                    f4_model = @(B, x) B(1) + B(2) .* x;
+                    ylim = get(gca, 'YLim');
+                    plot(time, f4_model(lin_coeff, time), '--', 'Color', 'k', 'LineWidth', 2);
+                    set(gca, 'YLim', ylim);
+ 
+                    xlabel('Time (min)');
+                    ylabel('Area');
+                    legend([dpoints, ...
+                        fitline_r2], ...
+                        'Data', ...
+                        'Fit2', ...
+                        'Location', 'Best');
+                    hold off
+%                    assignin('base', 'time', time');
+%                    assignin('base', 'area', area);
+                    input('next? ')
+                end
+            end
+
             % calculate time for area to increase by 6-fold
             if options.method == 1
                 lindex = find(area > area(2) * 6, 1, 'first');
@@ -122,39 +220,9 @@ for k = 1:length(DirNames)
                     Levin_Rate = [Levin_Rate, tdiff];
                     Levin_AppTimes = [Levin_AppTimes, time(2)];
                 end
-            else
+            elseif options.method == 2
                 Levin_Rate = [Levin_Rate, get_growth_times(time, area)];
                 Levin_AppTimes = [Levin_AppTimes, time(2)];
-            end
-            if length(area) < 10 
-            else
-                % fit linear regression
-                f2 = fitlm(time_lim, area_lim, 'RobustOpts', 'on');
-                B = table2array(f2.Coefficients(:, 1));
-                intercept_r = B(1);
-                gradient_r = B(2);
-                GrowthRates = [GrowthRates, gradient_r * 60];
-                AppTimes = [AppTimes, time(2)];
-
-                if options.debug > 0
-                    figure;
-                    hold on
-                    dpoints = scatter(time, area, 70, ...
-                        'MarkerFaceColor', [44 162 95] / 256, ...
-                        'MarkerEdgeColor', [100 100 100] / 256, ...
-                        'LineWidth', 1);
-                    fitline_r = plot(time_lim, (gradient_r * time_lim) + intercept_r, ...
-                        'LineWidth', 3', ...
-                        'Color', 'black');
-                    xlabel('Time (min)');
-                    ylabel('Area');
-                    legend([dpoints, ...
-                        fitline_r], ...
-                        'Data', ...
-                        'Fit', ...
-                        'Location', 'Best');
-                    hold off
-                end
             end
         end
     end
