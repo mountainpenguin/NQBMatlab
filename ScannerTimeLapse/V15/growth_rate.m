@@ -234,7 +234,7 @@ end
 
 disp('Plotting growth rates');
 figure('units', 'inches', 'pos', [0 0 14 6]);
-subplot(131);
+subplot(2, 2, 1);
 [n_at, x_at] = hist(AppTimes);
 h_at = bar(x_at, n_at, 1.0);
 set(h_at, ...
@@ -247,7 +247,7 @@ set(gca, 'Color', 'none');
 xticks = get(gca, 'XTick');
 set(gca, 'XTick', unique(round(xticks / 50) * 50));
 
-ax = subplot(132);
+ax = subplot(2, 2, 2);
 [n_gr, x_gr] = hist(GrowthRates);
 h_gr = bar(x_gr, n_gr, 1.0);
 set(h_gr, ...
@@ -259,7 +259,7 @@ ylabel('Frequency');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 
-subplot(133);
+subplot(2, 2, [3, 4]);
 sc = scatter(AppTimes, GrowthRates);
 set(sc, ...
     'markerfacecolor', [77 175 74] / 256, ...
@@ -268,6 +268,8 @@ ylabel('Growth Rate (px^2 / h)');
 xlabel('Appearance Time (min)');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+t = sprintf('n = %i', length(AppTimes));
+title(t);
 
 set(gcf, 'PaperPositionMode', 'auto');
 set(gcf, 'PaperUnits', 'inches');
@@ -282,7 +284,7 @@ print('-dpdf', '-r0', 'out');
 disp('Plotting using Levin-Reisman et al. method');
 % time taken for 6-fold increase
 figure('units', 'inches', 'pos', [0 0 14 6]);
-subplot(131);
+subplot(2, 2, 1);
 h_at2 = bar(x_at, n_at, 1.0);
 set(h_at2, ...
     'facecolor', [228 26 28] / 256, ...
@@ -294,7 +296,7 @@ set(gca, 'Color', 'none');
 xticks = get(gca, 'XTick');
 set(gca, 'XTick', unique(round(xticks / 50) * 50));
 
-ax = subplot(132);
+ax = subplot(2, 2, 2);
 [n_lev, x_lev] = hist(Levin_Rate);
 h_lev = bar(x_lev, n_lev, 1.0);
 set(h_lev, ...
@@ -306,15 +308,18 @@ ylabel('Frequency');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 
-subplot(133);
+subplot(2, 2, [3, 4]);
 sc = scatter(Levin_AppTimes, Levin_Rate);
 set(sc, ...
     'markerfacecolor', [77 175 74] / 256, ...
     'markeredgecolor', 'k');
+
 ylabel('Growth Time (min)');
 xlabel('Appearance Time (min)');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+t = sprintf('n = %i', length(Levin_AppTimes));
+title(t);
 
 set(gcf, 'PaperPositionMode', 'auto');
 set(gcf, 'PaperUnits', 'inches');
