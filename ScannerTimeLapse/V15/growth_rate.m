@@ -61,6 +61,7 @@ optionNames = fieldnames(options);
 % if odd number of arguments: DirNames is specified
 if round(nargin / 2) ~= nargin / 2
     DirNames = varargin(1);
+    DirNames = DirNames{1};
     varargin = varargin(2:end);
 else
     DirNames = pwd;
@@ -88,8 +89,8 @@ AppTimes = [];
 
 Levin_AppTimes = [];
 Levin_Rate = [];
-for DirName = DirNames
-    DirName = char(DirName);
+for k = 1:length(DirNames)
+    DirName = char(DirNames{k});
     disp(sprintf('Loading data from <%s>', DirName));
     datafile = fullfile(DirName, 'Results', 'VecArea.mat');
     data = load(datafile);
@@ -159,8 +160,8 @@ for DirName = DirNames
     end
     if options.debug > 0
         input('Press "enter" when you are happy with the debugging output; this will close all figures');
+        close all;
     end
-    close all;
 end
 
 disp('Plotting growth rates');
