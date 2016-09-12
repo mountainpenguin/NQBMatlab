@@ -83,12 +83,46 @@ for pair = reshape(varargin, 2, [])
     end
 end
 
-if options.debug > 1
-    disp('Debug has been set; you can type "close all" to close all figures');
-end
-
 if ischar(DirNames)
     DirNames = {DirNames};
+end
+
+disp('Directories to be processed:')
+for k = 1:length(DirNames)
+    fprintf(' %s\n', char(DirNames{k}));
+end
+fprintf('\n');
+disp('Options:')
+disp(' Method:')
+if options.method == 1
+    disp('  [1] time taken for six-fold increase in area from time of first appearance');
+elseif options.method == 2
+    disp('  [2] averaged time taken for six-fold increase in area for all timepoints');
+elseif options.method == 3
+    disp('  [3] not implemented');
+else
+    fprintf('  [%i] unknown method\n', options.method);
+end
+disp(' Merge Method:')
+if options.merge_method == 1
+    disp('  [1] ignore all merged colonies');
+elseif options.merge_method == 2
+    disp('  [2] use region before merge event');
+elseif options.merge_method == 3
+    disp('  [3] ignore any merge events');
+else
+    fprintf('  [%i] unknown merge method\n', options.merge_method);
+end
+disp('  Debug:')
+if options.debug == 0
+    disp('  [0] No debugging');
+else
+    disp('  [1] Debug growth rate fitting');
+end
+fprintf('\n');
+
+if options.debug > 1
+    disp('Debug has been set; you can type "close all" to close all figures');
 end
 
 GrowthRates = [];
