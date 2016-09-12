@@ -147,8 +147,29 @@ for k = 1:length(DirNames)
 
     %subplot(211);
     disp('Fitting areas to determine growth rates');
-    for colony = data'
-        if colony(end) == 0
+    for colony_num = 1:size(data, 1)
+        %perc = sprintf('%.2f%%', 100 * colony_num / size(data, 1));
+        %fprintf('Dataset %3i of %3i: Colony %3i of %3i (%7s) - ', k, length(DirNames), colony_num, size(data, 1), perc);
+        fprintf('Dataset %3i of %3i: Colony %3i of %3i (%7s) - ', k, length(DirNames), colony_num, size(data, 1));
+        border_status = find(notclosetoborder == colony_num, 1, 'first');
+        exclude_status = find(excluded == colony_num, 1, 'first');
+        if options.merge_method == 1
+            merge_status = merged(colony_num);
+        elseif options.merge_method == 2
+            merge_status = 0;
+        elseif options.merge_method == 3
+            merge_status = 0;
+        end
+        colony = data(colony_num, :);
+
+        if (colony(end) == 0)
+            fprintf('rejected (does not exist in final frame)\n');
+        elseif (merge_status ~= 0) 
+            fprintf('rejected (colony merges)\n');
+        elseif (isempty(border_status)) 
+            fprintf('rejected (colony is on plate border)\n');
+        elseif (~isempty(exclude_status))
+            fprintf('rejected (colony is on exclusion list)\n');
         else
             fidx = find(colony > 0, 1, 'first');
             if fidx == 0
@@ -221,9 +242,14 @@ for k = 1:length(DirNames)
                         %GrowthRates = [GrowthRates, coeff(3) * 60];  % hr^{-1}
                         AppTimes = [AppTimes, time(2)];
                         colony_discard = 1;
-                    end
-                end
 
+                        fprintf('accepted\n');
+                    else
+                        fprintf('rejected (linear region too early)\n');
+                    end
+                else
+                    fprintf('rejected (poor fit)\n');
+                end
 
                 if (options.debug > 0) && (colony_discard == 1)% & length(GrowthRates) == 8
                     %f3
@@ -265,6 +291,8 @@ for k = 1:length(DirNames)
 %                    assignin('base', 'area', area);
                     input('next? ')
                 end
+            else
+                fprintf('rejected (not enough datapoints)\n');
             end
 
             % calculate time for area to increase by 6-fold
