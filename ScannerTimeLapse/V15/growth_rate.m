@@ -185,8 +185,8 @@ for k = 1:length(DirNames)
             if options.merge_method == 2
                 merge_val = merged(colony_num);
                 if merge_val ~= 0
-                    area = colony(fidx-1:merge_val);
-                    time = timeaxis(fidx-1:merge_val);
+                    area = colony(fidx-1:merge_val-1);
+                    time = timeaxis(fidx-1:merge_val-1);
                 else
                     area = colony(fidx-1:end);
                     time = timeaxis(fidx-1:end);
