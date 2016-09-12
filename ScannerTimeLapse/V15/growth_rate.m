@@ -130,6 +130,13 @@ AppTimes = [];
 
 Levin_AppTimes = [];
 Levin_Rate = [];
+
+GrowthAreas = {};
+GrowthTimes = {};
+
+Levin_GrowthAreas = {};
+Levin_GrowthTimes = {};
+
 for k = 1:length(DirNames)
     DirName = char(DirNames{k});
     disp(sprintf('Loading data from <%s>', DirName));
@@ -238,6 +245,8 @@ for k = 1:length(DirNames)
                         f4 = fitlm(linear_time, linear_area, 'RobustOpts', 'on');
                         lin_coeff = table2array(f4.Coefficients(:, 1));
                         GrowthRates = [GrowthRates, lin_coeff(2) * 60]; 
+                        GrowthAreas{length(GrowthAreas) + 1} = area;
+                        GrowthTimes{length(GrowthTimes) + 1} = time;
 
                         %GrowthRates = [GrowthRates, coeff(3) * 60];  % hr^{-1}
                         AppTimes = [AppTimes, time(2)];
@@ -304,18 +313,74 @@ for k = 1:length(DirNames)
                     tdiff = t1 - t0;
                     Levin_Rate = [Levin_Rate, tdiff];
                     Levin_AppTimes = [Levin_AppTimes, time(2)];
+                    Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
+                    Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
                 end
             elseif options.method == 2
                 Levin_Rate = [Levin_Rate, get_growth_times(time, area)];
                 Levin_AppTimes = [Levin_AppTimes, time(2)];
+                Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
+                Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
+            elseif options.method == 3
+                Levin_Rate = [Levin_Rate, get_linear_growth_times(time, area, f3)];
+                Levin_AppTimes = [Levin_AppTimes, time(2)];
+                Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
+                Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
             end
         end
     end
+    fprintf('\n');
     if options.debug > 0
         input('Press "enter" when you are happy with the debugging output; this will close all figures');
         close all;
     end
 end
+
+disp('Plotting area graph for colonies used for each plot');
+figure('units', 'inches', 'pos', [0 0 14 6]);
+subplot(1, 2, 1);
+cc = lines(length(GrowthAreas));
+hold on;
+for k = 1:length(GrowthAreas)
+    ga = GrowthAreas{k};
+    gt = GrowthTimes{k};
+    plot(gt, ga, 'color', cc(k, :), 'LineWidth', 3);
+end
+hold off;
+title('Colonies used for determining growth rates');
+xlabel('Time (min)');
+ylabel('Area (px^2)');
+set(gca, 'box', 'off');
+set(gca, 'Color', 'none');
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
+
+subplot(1, 2, 2);
+cc = lines(length(Levin_GrowthAreas));
+hold on;
+for k = 1:length(Levin_GrowthAreas)
+    ga = Levin_GrowthAreas{k};
+    gt = Levin_GrowthTimes{k};
+    plot(gt, ga, 'color', cc(k, :), 'LineWidth', 3);
+end
+hold off;
+title('Colonies used for determining growth times');
+xlabel('Time (min)');
+ylabel('Area (px^2)');
+set(gca, 'box', 'off');
+set(gca, 'Color', 'none');
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
+
+set(gcf, 'PaperPositionMode', 'auto');
+set(gcf, 'PaperUnits', 'inches');
+%set(gcf, 'PaperPosition', [0 0 6 3]);
+set(gcf, 'PaperOrientation', 'landscape');
+
+msg = sprintf('Saved to %s', fullfile(pwd, 'areas.pdf'));
+disp(msg);
+
+print('-dpdf', '-r0', 'areas');
 
 disp('Plotting growth rates');
 figure('units', 'inches', 'pos', [0 0 14 6]);
