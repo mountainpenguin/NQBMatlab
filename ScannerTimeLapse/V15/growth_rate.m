@@ -508,3 +508,15 @@ function growth_time = get_growth_times(time, area)
     end
     growth_time = mean(growth_times);
 end
+
+function growth_time = get_linear_growth_times(time, area, nlmmodel)
+    fold_factor = 6;
+    coeff = table2array(nlmmodel.Coefficients(:, 1));
+    yoffset = coeff(1)  % Y-offset
+    maxY = coeff(2)  % max Y
+    gamma = coeff(3)  % steepness
+    alpha = coeff(4)  % midpoint X
+
+    error('stop here');
+    growth_time = 0;
+end
