@@ -241,7 +241,7 @@ set(h_at, ...
     'facecolor', [228 26 28] / 256, ...
     'edgecolor', 'k');
 xlabel('Appearance Time (min)');
-ylabel('Frequency');
+ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 xticks = get(gca, 'XTick');
@@ -255,7 +255,7 @@ set(h_gr, ...
     'edgecolor', 'k');
 
 xlabel('Growth Rate (px^2 / h)');
-ylabel('Frequency');
+ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 
@@ -290,7 +290,7 @@ set(h_at2, ...
     'facecolor', [228 26 28] / 256, ...
     'edgecolor', 'k');
 xlabel('Appearance Time (min)');
-ylabel('Frequency');
+ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 xticks = get(gca, 'XTick');
@@ -304,7 +304,7 @@ set(h_lev, ...
     'edgecolor', 'k');
 
 xlabel('Growth Time (min)');
-ylabel('Frequency');
+ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
 
