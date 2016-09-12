@@ -58,6 +58,9 @@ function growth_rate(varargin)
 % 'growth time'.
 % -----------------------------------------------------------------------
 
+% switch off warnings
+warning('off', 'all');
+
 % parse arguments
 options = struct('debug', 0, 'method', 1, 'merge_method', 1);
 optionNames = fieldnames(options);
