@@ -15,6 +15,10 @@ function growth_rate(varargin)
 %               Defaults to 1: time for sixfold increase from first appearance
 %               If set to 2: averaged time for sixfold increase from all
 %               timepoints
+%            merge_method (optional)
+%               Defaults to 1: ignore any colonies that merge
+%               If set to 2: take region before the merge point
+%               If set to 3: ignore merge events
 %            debug (optional)
 %               Defaults to 0
 %               If set to 1, will create a figure to demonstrate how growth
@@ -55,7 +59,7 @@ function growth_rate(varargin)
 % -----------------------------------------------------------------------
 
 % parse arguments
-options = struct('debug', 0, 'method', 1);
+options = struct('debug', 0, 'method', 1, 'merge_method', 1);
 optionNames = fieldnames(options);
 
 % if odd number of arguments: DirNames is specified
@@ -95,6 +99,11 @@ for k = 1:length(DirNames)
     datafile = fullfile(DirName, 'Results', 'VecArea.mat');
     data = load(datafile);
     data = data.VecArea;
+
+    merged = getMergedColonies(fullfile(DirName, 'Results'));
+    excluded = load(fullfile(DirName, 'Results', 'ExcludedBacteria.txt'));
+    notclosetoborder = FindColoniesInWorkingArea(DirName);
+
     timefile = fullfile(DirName, 'Results', 'TimeAxis.mat');
     timeaxis = load(timefile);
     timeaxis = timeaxis.TimeAxis;
@@ -108,10 +117,21 @@ for k = 1:length(DirNames)
             if fidx == 0
                 fidx = 1
             end
-            area = colony(fidx-1:end);
-            area_lim = area(7:end);
-            time = timeaxis(fidx-1:end)';
-            time_lim = time(7:end);
+            if options.merge_method == 2
+                merge_val = merged(colony_num);
+                if merge_val ~= 0
+                    area = colony(fidx-1:merge_val);
+                    time = timeaxis(fidx-1:merge_val);
+                else
+                    area = colony(fidx-1:end);
+                    time = timeaxis(fidx-1:end);
+                end
+            else
+                area = colony(fidx-1:end);
+                %area_lim = area(7:end);
+                time = timeaxis(fidx-1:end)';
+                %time_lim = time(7:end);
+            end
             if length(area) >= 10 
 %                % fit linear regression
 %                f2 = fitlm(time_lim, area_lim, 'RobustOpts', 'on');
@@ -244,8 +264,8 @@ xlabel('Appearance Time (min)');
 ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
-xticks = get(gca, 'XTick');
-set(gca, 'XTick', unique(round(xticks / 50) * 50));
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
 
 ax = subplot(2, 2, 2);
 [n_gr, x_gr] = hist(GrowthRates);
@@ -258,6 +278,7 @@ xlabel('Growth Rate (px^2 / h)');
 ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+%set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
 
 subplot(2, 2, [3, 4]);
 sc = scatter(AppTimes, GrowthRates);
@@ -268,6 +289,8 @@ ylabel('Growth Rate (px^2 / h)');
 xlabel('Appearance Time (min)');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
 t = sprintf('n = %i', length(AppTimes));
 title(t);
 
@@ -293,8 +316,8 @@ xlabel('Appearance Time (min)');
 ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
-xticks = get(gca, 'XTick');
-set(gca, 'XTick', unique(round(xticks / 50) * 50));
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
 
 ax = subplot(2, 2, 2);
 [n_lev, x_lev] = hist(Levin_Rate);
@@ -307,6 +330,8 @@ xlabel('Growth Time (min)');
 ylabel('Count');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+xticks = get(gca, 'XTick');
+set(gca, 'XTick', unique(round(xticks / 50) * 50));
 
 subplot(2, 2, [3, 4]);
 sc = scatter(Levin_AppTimes, Levin_Rate);
@@ -318,6 +343,8 @@ ylabel('Growth Time (min)');
 xlabel('Appearance Time (min)');
 set(gca, 'box', 'off');
 set(gca, 'Color', 'none');
+set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
+set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
 t = sprintf('n = %i', length(Levin_AppTimes));
 title(t);
 
@@ -330,6 +357,7 @@ msg = sprintf('Saved to %s', fullfile(pwd, 'out2.pdf'));
 disp(msg);
 
 print('-dpdf', '-r0', 'out2');
+
 end
 
 %nhist(GrowthRates, 'xlabel', 'Growth Rate');
