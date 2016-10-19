@@ -498,7 +498,7 @@ sheet2 = table([1:length(Levin_AppTimes)]', Levin_AppTimes', Levin_Rate', 'Varia
 writetable(sheet2, 'output_data.xlsx', 'Sheet', 2);
 for k = 1:length(GrowthAreas)
     tab = table(GrowthTimes{k}, GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
-    c = k * 2 - 1
+    c = k * 2 - 1;
     t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
     if (t(1) < 65), t(1) = []; end
     lett = [char(t) num2str(2)];
@@ -507,7 +507,7 @@ end
 
 for k = 1:length(Levin_GrowthAreas)
     tab = table(Levin_GrowthTimes{k}, Levin_GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
-    c = k * 2 - 1
+    c = k * 2 - 1;
     t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
     if (t(1) < 65), t(1) = []; end
     lett = [char(t) num2str(2)];
