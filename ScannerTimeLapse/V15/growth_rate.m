@@ -339,7 +339,7 @@ for k = 1:length(DirNames)
 end
 
 disp('Plotting area graph for colonies used for each plot');
-figure('units', 'inches', 'pos', [0 0 14 6]);
+figure('Units', 'Inches');
 subplot(1, 2, 1);
 cc = lines(length(GrowthAreas));
 hold on;
@@ -375,9 +375,9 @@ set(gca, 'XLim', [min(timeaxis), max(timeaxis)]);
 set(gca, 'XTick', unique(round(timeaxis / 500) * 500));
 
 set(gcf, 'PaperPositionMode', 'auto');
-set(gcf, 'PaperUnits', 'inches');
-%set(gcf, 'PaperPosition', [0 0 6 3]);
-set(gcf, 'PaperOrientation', 'landscape');
+set(gcf, 'PaperUnits', 'Inches');
+pos = get(gcf, 'Position');
+set(gcf, 'PaperSize', [pos(3), pos(4)]);
 
 msg = sprintf('Saved to %s', fullfile(pwd, 'areas.pdf'));
 disp(msg);
@@ -385,7 +385,7 @@ disp(msg);
 print('-dpdf', '-r0', 'areas');
 
 disp('Plotting growth rates');
-figure('units', 'inches', 'pos', [0 0 14 6]);
+figure('Units', 'Inches');
 subplot(2, 2, 1);
 [n_at, x_at] = hist(AppTimes);
 h_at = bar(x_at, n_at, 1.0);
@@ -427,9 +427,9 @@ t = sprintf('n = %i', length(AppTimes));
 title(t);
 
 set(gcf, 'PaperPositionMode', 'auto');
-set(gcf, 'PaperUnits', 'inches');
-%set(gcf, 'PaperPosition', [0 0 6 3]);
-set(gcf, 'PaperOrientation', 'landscape');
+set(gcf, 'PaperUnits', 'Inches');
+pos = get(gcf, 'Position');
+set(gcf, 'PaperSize', [pos(3), pos(4)]);
 msg = sprintf('Saved to %s', fullfile(pwd, 'out.pdf'));
 disp(msg);
 
@@ -438,7 +438,7 @@ print('-dpdf', '-r0', 'out');
 
 disp('Plotting using Levin-Reisman et al. method');
 % time taken for 6-fold increase
-figure('units', 'inches', 'pos', [0 0 14 6]);
+figure('Units', 'Inches');
 subplot(2, 2, 1);
 h_at2 = bar(x_at, n_at, 1.0);
 set(h_at2, ...
