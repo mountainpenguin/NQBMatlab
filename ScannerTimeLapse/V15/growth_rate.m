@@ -16,8 +16,8 @@ function growth_rate(varargin)
 %               If set to 2: averaged time for sixfold increase from all
 %               timepoints
 %            merge_method (optional)
-%               Defaults to 1: ignore any colonies that merge
-%               If set to 2: take region before the merge point
+%               Defaults to 1: take region before the merge point
+%               If set to 2: ignore any colonies that merge
 %               If set to 3: ignore merge events
 %            debug (optional)
 %               Defaults to 0
@@ -104,10 +104,10 @@ else
     fprintf('  [%i] unknown method\n', options.method);
 end
 disp(' Merge Method:')
-if options.merge_method == 1
-    disp('  [1] ignore all merged colonies');
-elseif options.merge_method == 2
-    disp('  [2] use region before merge event');
+if options.merge_method == 2
+    disp('  [2] ignore all merged colonies');
+elseif options.merge_method == 1
+    disp('  [1] use region before merge event');
 elseif options.merge_method == 3
     disp('  [3] ignore any merge events');
 else
@@ -160,9 +160,9 @@ for k = 1:length(DirNames)
         fprintf('Dataset %3i of %3i: Colony %3i of %3i (%7s) - ', k, length(DirNames), colony_num, size(data, 1));
         border_status = find(notclosetoborder == colony_num, 1, 'first');
         exclude_status = find(excluded == colony_num, 1, 'first');
-        if options.merge_method == 1
+        if options.merge_method == 2
             merge_status = merged(colony_num);
-        elseif options.merge_method == 2
+        elseif options.merge_method == 1
             merge_status = 0;
         elseif options.merge_method == 3
             merge_status = 0;
@@ -182,7 +182,7 @@ for k = 1:length(DirNames)
             if fidx == 0
                 fidx = 1
             end
-            if options.merge_method == 2
+            if options.merge_method == 1
                 merge_val = merged(colony_num);
                 if merge_val ~= 0
                     area = colony(fidx-1:merge_val-1);
