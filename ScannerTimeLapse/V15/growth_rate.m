@@ -482,14 +482,38 @@ t = sprintf('n = %i', length(Levin_AppTimes));
 title(t);
 
 set(gcf, 'PaperPositionMode', 'auto');
-set(gcf, 'PaperUnits', 'inches');
-%set(gcf, 'PaperPosition', [0 0 6 3]);
-set(gcf, 'PaperOrientation', 'landscape');
+set(gcf, 'PaperUnits', 'Inches');
+pos = get(gcf, 'Position');
+set(gcf, 'PaperSize', [pos(3), pos(4)]);
 
 msg = sprintf('Saved to %s', fullfile(pwd, 'out2.pdf'));
 disp(msg);
 
 print('-dpdf', '-r0', 'out2');
+
+% save data to Excel
+sheet1 = table([1:length(AppTimes)]', AppTimes', GrowthRates', 'VariableNames', {'Colony', 'Appearance_Time', 'Growth_Rate'});
+writetable(sheet1, 'output_data.xlsx', 'Sheet', 1);
+sheet2 = table([1:length(Levin_AppTimes)]', Levin_AppTimes', Levin_Rate', 'VariableNames', {'Colony', 'Appearance_Time', 'Time_to_6fold_increase'}); 
+writetable(sheet2, 'output_data.xlsx', 'Sheet', 2);
+for k = 1:length(GrowthAreas)
+    tab = table(GrowthTimes{k}, GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
+    c = k * 2 - 1
+    t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
+    if (t(1) < 65), t(1) = []; end
+    lett = [char(t) num2str(2)];
+    writetable(tab, 'output_data.xlsx', 'Sheet', 3, 'Range', lett);
+end
+
+for k = 1:length(Levin_GrowthAreas)
+    tab = table(Levin_GrowthTimes{k}, Levin_GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
+    c = k * 2 - 1
+    t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
+    if (t(1) < 65), t(1) = []; end
+    lett = [char(t) num2str(2)];
+    writetable(tab, 'output_data.xlsx', 'Sheet', 4, 'Range', lett);
+end
+
 
 end
 
