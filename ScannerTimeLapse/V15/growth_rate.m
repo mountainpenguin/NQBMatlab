@@ -440,6 +440,7 @@ disp('Plotting using Levin-Reisman et al. method');
 % time taken for 6-fold increase
 figure('Units', 'Inches');
 subplot(2, 2, 1);
+[n_at, x_at] = hist(Levin_AppTimes);
 h_at2 = bar(x_at, n_at, 1.0);
 set(h_at2, ...
     'facecolor', [228 26 28] / 256, ...
