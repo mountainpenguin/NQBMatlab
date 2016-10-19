@@ -308,10 +308,11 @@ for k = 1:length(DirNames)
 
             % calculate time for area to increase by 6-fold
             if options.method == 1
-                lindex = find(area > area(2) * 6, 1, 'first');
-                if length(lindex) > 0
-                    t0 = time(2);
-                    t1 = time(lindex);
+                index1 = find(area > 30, 1, 'first');
+                index2 = find(area > 180, 1, 'first');
+                if (length(index1) > 0) + (length(index2) > 0) == 2
+                    t0 = time(index1);
+                    t1 = time(index2);
                     tdiff = t1 - t0;
                     Levin_Rate = [Levin_Rate, tdiff];
                     Levin_AppTimes = [Levin_AppTimes, time(2)];
