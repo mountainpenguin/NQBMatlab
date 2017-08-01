@@ -308,8 +308,8 @@ for k = 1:length(DirNames)
 
             % calculate time for area to increase by 6-fold
             if options.method == 1
-                index1 = find(area > 30, 1, 'first');
-                index2 = find(area > 180, 1, 'first');
+                index1 = find(area > 20, 1, 'first');
+                index2 = find(area > 80, 1, 'first');
                 if (length(index1) > 0) + (length(index2) > 0) == 2
                     t0 = time(index1);
                     t1 = time(index2);
