@@ -192,7 +192,7 @@ for k = 1:length(DirNames)
                     time = timeaxis(fidx-1:end);
                 end
             else
-                area = colony(fidx-1:end);
+                area = colony(fidx-1:end)';
                 %area_lim = area(7:end);
                 time = timeaxis(fidx-1:end)';
                 %time_lim = time(7:end);
@@ -497,22 +497,48 @@ sheet1 = table([1:length(AppTimes)]', AppTimes', GrowthRates', 'VariableNames', 
 writetable(sheet1, 'output_data.xlsx', 'Sheet', 1);
 sheet2 = table([1:length(Levin_AppTimes)]', Levin_AppTimes', Levin_Rate', 'VariableNames', {'Colony', 'Appearance_Time', 'Time_to_6fold_increase'}); 
 writetable(sheet2, 'output_data.xlsx', 'Sheet', 2);
+
+mega_table = false;
 for k = 1:length(GrowthAreas)
-    tab = table(GrowthTimes{k}, GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
-    c = k * 2 - 1;
-    t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
-    if (t(1) < 65), t(1) = []; end
-    lett = [char(t) num2str(2)];
-    writetable(tab, 'output_data.xlsx', 'Sheet', 3, 'Range', lett);
+    tab = [GrowthTimes{k} GrowthAreas{k}'] 
+    %, 'VariableNames', {sprintf('Time_%d', k), sprintf('Area_%d', k)});
+    if (k > 1)
+        mega_size = size(mega_table);
+        tab_size = size(tab);
+        row_diff = mega_size(1) - tab_size(1);
+        if (row_diff > 0)
+            % increase tab size
+            tab = [tab; zeros(row_diff, 2)];
+        elseif (row_diff < 0)
+            % increase mega_table size
+            mega_table = [mega_table; zeros(-row_diff, mega_size(2))];
+        end
+        mega_table = [mega_table tab];
+    else
+        mega_table = tab;
+    end
+    writetable(mega_table, 'output_data.xlsx', 'Sheet', 3)
 end
 
 for k = 1:length(Levin_GrowthAreas)
-    tab = table(Levin_GrowthTimes{k}, Levin_GrowthAreas{k}', 'VariableNames', {'Time', 'Area'});
-    c = k * 2 - 1;
-    t = [floor((c - 1) / 26) + 64 rem(c - 1, 26) + 65];
-    if (t(1) < 65), t(1) = []; end
-    lett = [char(t) num2str(2)];
-    writetable(tab, 'output_data.xlsx', 'Sheet', 4, 'Range', lett);
+    tab = [Levin_GrowthTimes{k} Levin_GrowthAreas{k}'] 
+    %, 'VariableNames', {sprintf('Time_%d', k), sprintf('Area_%d', k)});
+    if (k > 1)
+        mega_size = size(mega_table);
+        tab_size = size(tab);
+        row_diff = mega_size(1) - tab_size(1);
+        if (row_diff > 0)
+            % increase tab size
+            tab = [tab; zeros(row_diff, 2)];
+        elseif (row_diff < 0)
+            % increase mega_table size
+            mega_table = [mega_table; zeros(-row_diff, mega_size(2))];
+        end
+        mega_table = [mega_table tab];
+    else
+        mega_table = tab;
+    end
+    writetable(mega_table, 'output_data.xlsx', 'Sheet', 4)
 end
 
 
