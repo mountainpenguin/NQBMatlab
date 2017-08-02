@@ -504,9 +504,9 @@ disp(msg);
 print('-dpdf', '-r0', 'out2');
 
 % save data to Excel
-sheet1 = table([1:length(AppTimes)]', AppTimes', GrowthRates', 'VariableNames', {'Colony', 'Appearance_Time', 'Growth_Rate'});
+sheet1 = table(Colony_Nums', AppTimes', GrowthRates', 'VariableNames', {'Colony', 'Appearance_Time', 'Growth_Rate'});
 writetable(sheet1, 'output_data.xlsx', 'Sheet', 1);
-sheet2 = table([1:length(Levin_AppTimes)]', Levin_AppTimes', Levin_Rate', 'VariableNames', {'Colony', 'Appearance_Time', 'Time_to_6fold_increase'}); 
+sheet2 = table(Levin_Colony_Nums', Levin_AppTimes', Levin_Rate', 'VariableNames', {'Colony', 'Appearance_Time', 'Time_to_6fold_increase'}); 
 writetable(sheet2, 'output_data.xlsx', 'Sheet', 2);
 
 mega_table = zeros(length(timeaxis), length(GrowthTimes));
