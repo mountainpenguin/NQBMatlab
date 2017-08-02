@@ -96,6 +96,10 @@ disp('Options:')
 disp(' Method:')
 if options.method == 1
     disp('  [1] time taken for six-fold increase in area from time of first appearance');
+    area_min = inputdlg('Area to start from is?');
+    area_max = inputdlg('Area to end at?');
+    area_min = str2num(area_min{1});
+    area_max = str2num(area_max{1});
 elseif options.method == 2
     disp('  [2] averaged time taken for six-fold increase in area for all timepoints');
 elseif options.method == 3
@@ -312,8 +316,8 @@ for k = 1:length(DirNames)
 
             % calculate time for area to increase by 6-fold
             if options.method == 1
-                index1 = find(area > 20, 1, 'first');
-                index2 = find(area > 80, 1, 'first');
+                index1 = find(area > area_min, 1, 'first');
+                index2 = find(area > area_max, 1, 'first');
                 if (length(index1) > 0) + (length(index2) > 0) == 2
                     t0 = time(index1);
                     t1 = time(index2);
