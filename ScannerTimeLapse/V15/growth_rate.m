@@ -137,6 +137,9 @@ GrowthTimes = {};
 Levin_GrowthAreas = {};
 Levin_GrowthTimes = {};
 
+Colony_Nums = [];
+Levin_Colony_Nums = [];
+
 for k = 1:length(DirNames)
     DirName = char(DirNames{k});
     disp(sprintf('Loading data from <%s>', DirName));
@@ -247,6 +250,7 @@ for k = 1:length(DirNames)
                         GrowthRates = [GrowthRates, lin_coeff(2) * 60]; 
                         GrowthAreas{length(GrowthAreas) + 1} = area;
                         GrowthTimes{length(GrowthTimes) + 1} = time;
+                        Colony_Nums = [Colony_Nums, colony_num];
 
                         %GrowthRates = [GrowthRates, coeff(3) * 60];  % hr^{-1}
                         AppTimes = [AppTimes, time(2)];
@@ -318,17 +322,20 @@ for k = 1:length(DirNames)
                     Levin_AppTimes = [Levin_AppTimes, time(2)];
                     Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
                     Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
+                    Levin_Colony_Nums = [Levin_Colony_Nums, colony_num];
                 end
             elseif options.method == 2
                 Levin_Rate = [Levin_Rate, get_growth_times(time, area)];
                 Levin_AppTimes = [Levin_AppTimes, time(2)];
                 Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
                 Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
+                Levin_Colony_Nums = [Levin_Colony_Nums, colony_num];
             elseif options.method == 3
                 Levin_Rate = [Levin_Rate, get_linear_growth_times(time, area, f3)];
                 Levin_AppTimes = [Levin_AppTimes, time(2)];
                 Levin_GrowthAreas{length(Levin_GrowthAreas) + 1} = area;
                 Levin_GrowthTimes{length(Levin_GrowthTimes) + 1} = time;
+                Levin_Colony_Nums = [Levin_Colony_Nums, colony_num];
             end
         end
     end
@@ -509,8 +516,14 @@ for k = 1:length(GrowthAreas)
         mega_table(i + first_time - 1, k + 1) = this_areas(i);
     end
 end
+column_names = {'Time'};
+for a = 1:length(Colony_Nums)
+    column_names{a + 1} = sprintf('Colony %d', Colony_Nums(a));
+end
+column_names = table(column_names);
 mega_table = table(mega_table);
 writetable(mega_table, 'output_data.xlsx', 'Sheet', 3);
+writetable(column_names, 'output_data.xlsx', 'Sheet', 4);
 
 mega_table = zeros(length(timeaxis), length(Levin_GrowthTimes));
 mega_table(:, 1) = timeaxis;
@@ -523,8 +536,14 @@ for k = 1:length(Levin_GrowthAreas)
         mega_table(i + first_time - 1, k + 1) = this_areas(i);
     end
 end
+column_names = {'Time'};
+for a = 1:length(Levin_Colony_Nums)
+    column_names{a + 1} = sprintf('Colony %d', Levin_Colony_Nums(a));
+end
+column_names = table(column_names);
 mega_table = table(mega_table);
-writetable(mega_table, 'output_data.xlsx', 'Sheet', 4);
+writetable(mega_table, 'output_data.xlsx', 'Sheet', 5);
+writetable(column_names, 'output_data.xlsx', 'Sheet', 6);
 
 end
 
