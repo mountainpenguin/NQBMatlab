@@ -498,49 +498,33 @@ writetable(sheet1, 'output_data.xlsx', 'Sheet', 1);
 sheet2 = table([1:length(Levin_AppTimes)]', Levin_AppTimes', Levin_Rate', 'VariableNames', {'Colony', 'Appearance_Time', 'Time_to_6fold_increase'}); 
 writetable(sheet2, 'output_data.xlsx', 'Sheet', 2);
 
-mega_table = false;
+mega_table = zeros(length(timeaxis), length(GrowthTimes));
+mega_table(:, 1) = timeaxis;
 for k = 1:length(GrowthAreas)
-    tab = [GrowthTimes{k} GrowthAreas{k}'] 
-    %, 'VariableNames', {sprintf('Time_%d', k), sprintf('Area_%d', k)});
-    if (k > 1)
-        mega_size = size(mega_table);
-        tab_size = size(tab);
-        row_diff = mega_size(1) - tab_size(1);
-        if (row_diff > 0)
-            % increase tab size
-            tab = [tab; zeros(row_diff, 2)];
-        elseif (row_diff < 0)
-            % increase mega_table size
-            mega_table = [mega_table; zeros(-row_diff, mega_size(2))];
-        end
-        mega_table = [mega_table tab];
-    else
-        mega_table = tab;
-    end
-    writetable(mega_table, 'output_data.xlsx', 'Sheet', 3)
-end
+    this_times = GrowthTimes{k};
+    this_areas = GrowthAreas{k}';
 
+    first_time = find(timeaxis == this_times(1), 1, 'first');
+    for i = 1:length(this_times)
+        mega_table(i + first_time - 1, k + 1) = this_areas(i);
+    end
+end
+mega_table = table(mega_table);
+writetable(mega_table, 'output_data.xlsx', 'Sheet', 3);
+
+mega_table = zeros(length(timeaxis), length(Levin_GrowthTimes));
+mega_table(:, 1) = timeaxis;
 for k = 1:length(Levin_GrowthAreas)
-    tab = [Levin_GrowthTimes{k} Levin_GrowthAreas{k}'] 
-    %, 'VariableNames', {sprintf('Time_%d', k), sprintf('Area_%d', k)});
-    if (k > 1)
-        mega_size = size(mega_table);
-        tab_size = size(tab);
-        row_diff = mega_size(1) - tab_size(1);
-        if (row_diff > 0)
-            % increase tab size
-            tab = [tab; zeros(row_diff, 2)];
-        elseif (row_diff < 0)
-            % increase mega_table size
-            mega_table = [mega_table; zeros(-row_diff, mega_size(2))];
-        end
-        mega_table = [mega_table tab];
-    else
-        mega_table = tab;
-    end
-    writetable(mega_table, 'output_data.xlsx', 'Sheet', 4)
-end
+    this_times = Levin_GrowthTimes{k};
+    this_areas = Levin_GrowthAreas{k}';
 
+    first_time = find(timeaxis == this_times(1), 1, 'first');
+    for i = 1:length(this_times)
+        mega_table(i + first_time - 1, k + 1) = this_areas(i);
+    end
+end
+mega_table = table(mega_table);
+writetable(mega_table, 'output_data.xlsx', 'Sheet', 4);
 
 end
 
